@@ -10,6 +10,7 @@ class PatientNoteBaseData(BaseModel):
     objective: str
     assessment: str
     plan: str
+    physician: str
 
 
 class PatientNote(PatientNoteBaseData):

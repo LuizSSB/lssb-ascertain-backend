@@ -44,6 +44,7 @@ class SQLPatientNoteRepository(PatientNoteRepository):
                 objective=note_data.objective,
                 assessment=note_data.assessment,
                 plan=note_data.plan,
+                physician=note_data.physician,
             )
             session.add(note)
             await session.commit()

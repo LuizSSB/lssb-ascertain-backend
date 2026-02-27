@@ -16,6 +16,7 @@ class SQLPatientNote(BaseSQLModel):
     objective: Mapped[str] = mapped_column(nullable=False)
     assessment: Mapped[str] = mapped_column(nullable=False)
     plan: Mapped[str] = mapped_column(nullable=False)
+    physician: Mapped[str] = mapped_column(nullable=False)
 
     @property
     def as_common_type(self):
@@ -27,4 +28,5 @@ class SQLPatientNote(BaseSQLModel):
             objective=self.objective,
             assessment=self.assessment,
             plan=self.plan,
+            physician=self.physician,
         )
