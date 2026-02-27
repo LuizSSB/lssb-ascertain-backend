@@ -1,0 +1,11 @@
+services:
+  db:
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  web:
+    restart: always
+    environment:
+      - RELOAD=false
+
+volumes:
+  pgdata:

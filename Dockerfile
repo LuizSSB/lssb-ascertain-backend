@@ -5,8 +5,9 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app/ .
+COPY app ./app
+COPY migrations ./migrations
 
-EXPOSE 8000
-
-# Dockerfile is being used just to set the environment up. CMD should be in the docker-compose.yaml file.
+COPY scripts ./scripts
+RUN chmod +x scripts/start.sh
+ENTRYPOINT ["scripts/start.sh"]

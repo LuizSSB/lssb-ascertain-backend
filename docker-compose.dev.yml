@@ -1,0 +1,11 @@
+services:
+  db:
+    ports:
+      - "5432:5432"
+  web:
+    environment:
+      - RELOAD=true
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"

@@ -11,7 +11,7 @@ from usecases.patient_note import PatientNoteUsecases
 class DefaultAppContainer(BaseAppContainer):
     db = providers.Singleton(
         SQLDatabase,
-        db_url=AppSettings.default().db_url,
+        db_url=AppSettings.default().DB_URL,
     )
 
     patient_repository = providers.Factory(
