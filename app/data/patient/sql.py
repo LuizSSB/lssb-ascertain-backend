@@ -1,6 +1,7 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable, Iterable
 
+from data.patient import PatientRepository
 from models.patient import Patient, PatientBaseData, PatientUpdateData
 from models.sql.patient import SQLPatient
 from models.utils import SortFieldData
@@ -8,7 +9,7 @@ from sqlalchemy import asc, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class SQLPatientRepository:
+class SQLPatientRepository(PatientRepository):
 
     def __init__(self, session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]]) -> None:
         self.session_factory = session_factory
