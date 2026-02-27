@@ -1,3 +1,5 @@
+from datetime import date
+
 from data.patient_note import PatientNoteRepository
 from models.patient_note import PatientNote, PatientNoteBaseData
 from models.utils import SkipNextToken, SortOrder
@@ -24,7 +26,16 @@ class PatientNoteUsecases:
             SkipNextToken(skip=skip + len(notes_list)) if limit and len(notes_list) >= limit else None,
         )
 
-    async def create_note(self, note_data: PatientNoteBaseData) -> PatientNote:
+    async def create_note(self, patient_id: str, soap_note: str) -> PatientNote:
+        note_data = PatientNoteBaseData(
+            patient_id=patient_id,
+            assessment="TODO",
+            encounter_date=date.fromisoformat("2023-01-01"),
+            subjective="TODO",
+            objective="TODO",
+            physician="TODO",
+            plan="TODO",
+        )
         return await self.repository.create_note(note_data)
 
     async def delete_note(self, note_id: str) -> PatientNote | None:

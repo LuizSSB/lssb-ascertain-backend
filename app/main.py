@@ -27,3 +27,4 @@ app.add_middleware(
 )
 
 app.include_router(ROUTER_V1_PATIENTS)
+app.include_router(ROUTER_V1_PATIENT_NOTES)

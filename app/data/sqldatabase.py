@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
 
+from models.app_settings import AppSettings
 from models.sql import BaseSQLModel
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
 class SQLDatabase:
     def __init__(self, db_url: str) -> None:
-        self._engine = create_async_engine(db_url, echo=True)
+        self._engine = create_async_engine(db_url, echo=AppSettings.default().env == "dev")
         self._session_factory = async_sessionmaker(
             bind=self._engine,
             autocommit=False,
