@@ -1,2 +1,6 @@
-fastapi==0.133.1
+aiosqlite==0.22.1
+dependency_injector==4.48.3
+fastapi[standard]==0.133.1
+greenlet==3.3.2
+sqlalchemy==2.0.47
 uvicorn==0.41.0
