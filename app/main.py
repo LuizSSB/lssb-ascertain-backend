@@ -2,17 +2,18 @@ import routes
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from ioc.container import Container
+from ioc import ioc_container, ioc_container_type, ioc_setup_root
+from routes.v1.patient_notes import ROUTER_V1_PATIENT_NOTES
 from routes.v1.patients import ROUTER_V1_PATIENTS
-from utils.modules import get_module_filepaths
 
-container = Container()
-container.wire(modules=get_module_filepaths(routes))
+ioc_setup_root(inject_packages={routes})
 
 
 @asynccontextmanager
 async def _lifespan(app: FastAPI):
-    await container.db().create_database()
+    container_type = ioc_container_type()
+    container = ioc_container()
+    await container_type.lifecycle_setup(container)
     yield
 
 
