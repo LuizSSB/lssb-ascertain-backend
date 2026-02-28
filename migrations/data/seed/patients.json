@@ -1,0 +1,12 @@
+[
+  {
+    "id": "patient-luiz",
+    "name": "Luiz",
+    "birthdate": "1969-12-31"
+  },
+  {
+    "id": "patient-john",
+    "name": "John Appleseed",
+    "birthdate": "1991-10-31"
+  }
+]

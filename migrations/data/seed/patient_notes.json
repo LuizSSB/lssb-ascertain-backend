@@ -1,0 +1,32 @@
+[
+  {
+    "id": "note1",
+    "patient_id": "patient-luiz",
+    "encounter_date": "2025-01-02",
+    "subjective": "Patient reports feeling like very bad",
+    "objective": "Patient is talking nonsense and limping",
+    "assessment": "Patient has very bad disease",
+    "plan": "Fill him up with all sorts of stuff",
+    "physician": "Jekyl Hyde"
+  },
+  {
+    "id": "note2",
+    "patient_id": "patient-luiz",
+    "encounter_date": "2025-10-15",
+    "subjective": "Patient reports difficulty seeing",
+    "objective": "Patient eyes are full of pus",
+    "assessment": "Patient has severe conjunctivitis",
+    "plan": "Extract affected eye",
+    "physician": "Mr Eyeman"
+  },
+  {
+    "id": "note3",
+    "patient_id": "patient-john",
+    "encounter_date": "2026-01-02",
+    "subjective": "Fatigue and insomnia",
+    "objective": "Low concentration of white blood cells",
+    "assessment": "Lack of sleep",
+    "plan": "Take sleep medication 3 times a week, before sleep",
+    "physician": "Jack Nickel"
+  }
+]

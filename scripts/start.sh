@@ -18,7 +18,7 @@ fi
 
 # 3. Run migrations
 echo "Running migrations..."
-# alembic upgrade head
+alembic upgrade head
 
 # 4. Execute FastAPI
 # Using 'exec' ensures the app receives Unix signals (like SIGTERM) directly
