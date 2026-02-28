@@ -23,8 +23,7 @@ echo "Running migrations..."
 # 4. Execute FastAPI
 # Using 'exec' ensures the app receives Unix signals (like SIGTERM) directly
 echo "Starting FastAPI on $APP_HOST:$APP_PORT..."
-cd app
-exec uvicorn main:app \
+exec uvicorn app.main:app \
     --host "$APP_HOST" \
     --port "$APP_PORT" \
     $RELOAD_FLAG

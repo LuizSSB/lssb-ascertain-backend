@@ -2,12 +2,13 @@ from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
-from ioc import ioc_container_type
-from models.api import EntityResponse, ErrorResponse, ListResponse
-from models.api.patients import GETPatients, PATCHPatient, POSTPatient
-from models.patient import Patient
-from models.utils import SkipNextToken
-from usecases.patient import PatientUsecases
+
+from app.ioc import ioc_container_type
+from app.models.api import EntityResponse, ErrorResponse, ListResponse
+from app.models.api.patients import GETPatients, PATCHPatient, POSTPatient
+from app.models.patient import Patient
+from app.models.utils import SkipNextToken
+from app.usecases.patient import PatientUsecases
 
 ROUTER_V1_PATIENTS = APIRouter(prefix="/patients", tags=["patients"])
 

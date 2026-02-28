@@ -1,6 +1,6 @@
-from models.api import ListRequest
-from models.patient_note import PatientNoteBaseData
-from models.utils import SortOrder
+from app.models.api import ListRequest
+from app.models.patient_note import PatientNoteBaseData
+from app.models.utils import SortOrder
 
 
 class GETPatientNotes(ListRequest):

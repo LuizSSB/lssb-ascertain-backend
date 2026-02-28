@@ -1,10 +1,11 @@
-import routes
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from ioc import ioc_container, ioc_container_type, ioc_setup_root
-from routes.v1.patient_notes import ROUTER_V1_PATIENT_NOTES
-from routes.v1.patients import ROUTER_V1_PATIENTS
+
+from app import routes  # type: ignore
+from app.ioc import ioc_container, ioc_container_type, ioc_setup_root
+from app.routes.v1.patient_notes import ROUTER_V1_PATIENT_NOTES
+from app.routes.v1.patients import ROUTER_V1_PATIENTS
 
 ioc_setup_root(inject_packages={routes})
 

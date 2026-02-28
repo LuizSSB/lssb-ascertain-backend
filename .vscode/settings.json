@@ -7,7 +7,7 @@
     "cursorpyright.analysis.diagnosticMode": "workspace",
     "cursorpyright.analysis.typeCheckingMode": "strict",
     "cursorpyright.analysis.extraPaths": [
-        "./app",
+        ".",
     ],
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file",
@@ -27,7 +27,7 @@
     "python.analysis.indexing": true,
     "python.analysis.autoImportCompletions": true,
     "python.analysis.extraPaths": [
-        "./app",
+        ".",
     ],
     "python.analysis.diagnosticMode": "workspace",
 }

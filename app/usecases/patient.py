@@ -1,6 +1,6 @@
-from data.patient import PatientRepository
-from models.patient import Patient, PatientBaseData, PatientUpdateData
-from models.utils import SkipNextToken, SortFieldData
+from app.data.patient import PatientRepository
+from app.models.patient import Patient, PatientBaseData, PatientUpdateData
+from app.models.utils import SkipNextToken, SortFieldData
 
 
 class PatientUsecases:

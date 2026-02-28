@@ -1,17 +1,17 @@
 import uuid
 from datetime import date
 
-from models.patient import Patient
-from models.sql import BaseSQLModel
-from sqlalchemy import Date
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlmodel import Field, SQLModel
+
+from app.models.patient import Patient
 
 
-class SQLPatient(BaseSQLModel):
-    __tablename__ = "patients"
-    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
-    name: Mapped[str] = mapped_column(nullable=False)
-    birthdate: Mapped[date] = mapped_column(Date, nullable=False)
+class SQLPatient(SQLModel, table=True):
+    __tablename__ = "patients"  # type: ignore
+
+    id: str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    birthdate: date
 
     @property
     def as_common_type(self) -> Patient:

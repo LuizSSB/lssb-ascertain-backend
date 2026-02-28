@@ -1,8 +1,9 @@
-from data.patient import PatientRepository
-from data.patient_note import PatientNoteRepository
 from dependency_injector import containers, providers
-from usecases.patient import PatientUsecases
-from usecases.patient_note import PatientNoteUsecases
+
+from app.data.patient import PatientRepository
+from app.data.patient_note import PatientNoteRepository
+from app.usecases.patient import PatientUsecases
+from app.usecases.patient_note import PatientNoteUsecases
 
 
 class BaseAppContainer(containers.DeclarativeContainer):

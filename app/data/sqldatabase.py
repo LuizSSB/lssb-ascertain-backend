@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 
-from models.app_settings import AppSettings
-from models.sql import BaseSQLModel
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlmodel import SQLModel
+
+from app.models.app_settings import AppSettings
 
 
 class SQLDatabase:
@@ -18,7 +19,7 @@ class SQLDatabase:
 
     async def create_database(self) -> None:
         async with self._engine.begin() as conn:
-            await conn.run_sync(BaseSQLModel.metadata.create_all)
+            await conn.run_sync(SQLModel.metadata.create_all)
 
     @asynccontextmanager
     async def session(self):

@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
 
-from models.patient_note import PatientNoteBaseData
-from models.sql.patient_note import PatientNote
-from models.utils import SortOrder
+from app.models.patient_note import PatientNote, PatientNoteBaseData
+from app.models.utils import SortOrder
 
 
 class PatientNoteRepository(ABC):

@@ -1,10 +1,10 @@
 from types import ModuleType
 from typing import cast
 
-from ioc.containers import BaseAppContainer
-from ioc.containers.default import DefaultAppContainer
-from utils.collections import flatten
-from utils.modules import get_module_filepaths
+from app.ioc.containers import BaseAppContainer
+from app.ioc.containers.default import DefaultAppContainer
+from app.utils.collections import flatten
+from app.utils.modules import get_module_filepaths
 
 _active_container: tuple[type[BaseAppContainer], BaseAppContainer] | None = None
 

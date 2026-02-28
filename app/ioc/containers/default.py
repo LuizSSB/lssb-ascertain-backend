@@ -1,11 +1,12 @@
-from data.patient.sql import SQLPatientRepository
-from data.patient_note.sql import SQLPatientNoteRepository
-from data.sqldatabase import SQLDatabase
 from dependency_injector import providers
-from ioc.containers import BaseAppContainer
-from models.app_settings import AppSettings
-from usecases.patient import PatientUsecases
-from usecases.patient_note import PatientNoteUsecases
+
+from app.data.patient.sql import SQLPatientRepository
+from app.data.patient_note.sql import SQLPatientNoteRepository
+from app.data.sqldatabase import SQLDatabase
+from app.ioc.containers import BaseAppContainer
+from app.models.app_settings import AppSettings
+from app.usecases.patient import PatientUsecases
+from app.usecases.patient_note import PatientNoteUsecases
 
 
 class DefaultAppContainer(BaseAppContainer):

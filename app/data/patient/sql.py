@@ -1,12 +1,13 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable, Iterable
 
-from data.patient import PatientRepository
-from models.patient import Patient, PatientBaseData, PatientUpdateData
-from models.sql.patient import SQLPatient
-from models.utils import SortFieldData
-from sqlalchemy import asc, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import asc, col, desc, select
+
+from app.data.patient import PatientRepository
+from app.models.patient import Patient, PatientBaseData, PatientUpdateData
+from app.models.sql.patient import SQLPatient
+from app.models.utils import SortFieldData
 
 
 class SQLPatientRepository(PatientRepository):
@@ -24,7 +25,7 @@ class SQLPatientRepository(PatientRepository):
     ) -> Iterable[Patient]:
         query = select(SQLPatient)
         if name:
-            query = query.filter(SQLPatient.name.like(f"%{name}%"))
+            query = query.where(col(SQLPatient.name).contains(name))
         if skip:
             query = query.offset(skip)
         if limit:
@@ -50,7 +51,7 @@ class SQLPatientRepository(PatientRepository):
 
     async def _get_patient(self, patient_id: str, session: AsyncSession) -> SQLPatient | None:
         if patient := (
-            await session.execute(select(SQLPatient).filter(SQLPatient.id == patient_id))
+            await session.execute(select(SQLPatient).where(SQLPatient.id == patient_id))
         ).scalar_one_or_none():
             return patient
 
@@ -58,7 +59,10 @@ class SQLPatientRepository(PatientRepository):
 
     async def get_patient(self, patient_id: str) -> Patient | None:
         async with self.session_factory() as session:
-            return await self._get_patient(patient_id, session)
+            if patient := await self._get_patient(patient_id, session):
+                return patient.as_common_type
+
+            return None
 
     async def create_patient(self, patient_data: PatientBaseData) -> Patient:
         async with self.session_factory() as session:
