@@ -3,5 +3,6 @@ asyncpg==0.31.0
 dependency_injector==4.48.3
 fastapi[standard]==0.133.1
 greenlet==3.3.2
+PyMuPDF==1.27.1
 sqlmodel==0.0.32
 uvicorn==0.41.0
