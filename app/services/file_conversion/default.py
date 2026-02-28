@@ -1,10 +1,11 @@
 import pymupdf
 from starlette.datastructures import UploadFile
 
-from app.models.exceptions.unsupported_file_type import UnsupportedFileType
+from app.models.exceptions import UnsupportedFileType
+from app.services.file_conversion import FileConversionService
 
 
-class DefaultFileConversionService:
+class DefaultFileConversionService(FileConversionService):
 
     async def convert_to_text(self, file: UploadFile) -> str:
         content_type = file.content_type or ""
@@ -36,6 +37,6 @@ class DefaultFileConversionService:
 
         for conversion in (_convert_text_file, _convert_pdf):
             if final_result := await conversion():
-                return final_result
+                return str(final_result)
 
         raise UnsupportedFileType(content_type)

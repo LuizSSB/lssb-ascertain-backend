@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from app.ioc import ioc_container_type
 from app.models.api import EntityResponse, ErrorResponse, ListResponse
 from app.models.api.patient_notes import GETPatientNotes
-from app.models.exceptions.unsupported_file_type import UnsupportedFileType
+from app.models.exceptions import UnsupportedFileType
 from app.models.patient_note import PatientNote
 from app.models.utils import SkipNextToken
 from app.usecases.patient_note import PatientNoteUsecases
@@ -22,12 +22,12 @@ PatientNoteUsecasesDependency = Annotated[
 @ROUTER_V1_PATIENT_NOTES.get("/patients/{patient_id}/notes")
 @inject
 async def get_notes(
-    patient_id: str, request: Annotated[GETPatientNotes, Depends()], usecase: PatientNoteUsecasesDependency
+    usecase: PatientNoteUsecasesDependency, patient_id: str, request: Annotated[GETPatientNotes, Depends()]
 ) -> ListResponse[PatientNote]:
     try:
         next_token = SkipNextToken.from_string(request.next_token) if request.next_token else None
     except Exception as e:
-        raise HTTPException(400, ErrorResponse(message="Invalid next token", cause=e))
+        raise HTTPException(400, ErrorResponse(message="Invalid next token", cause=str(e)))
 
     patients, next_token = await usecase.list_notes(
         patient_id,
@@ -38,10 +38,15 @@ async def get_notes(
     return ListResponse(next_token=str(next_token) if next_token else None, data=patients)
 
 
-@ROUTER_V1_PATIENT_NOTES.post("/patients/{patient_id}/notes")
+_MAX_BYTES_NOTE_FILE = 1024  # 1mb
+
+
+@ROUTER_V1_PATIENT_NOTES.post("/patients/{patient_id}/notes", status_code=201)
 async def post_note(
-    patient_id: str, usecase: PatientNoteUsecasesDependency, file: Annotated[UploadFile, File(...)]
+    usecase: PatientNoteUsecasesDependency, patient_id: str, file: Annotated[UploadFile, File(...)]
 ) -> EntityResponse[PatientNote]:
+    if file.size and file.size > _MAX_BYTES_NOTE_FILE:
+        raise HTTPException(413, detail=ErrorResponse(message=f"Note file cannot exceed {_MAX_BYTES_NOTE_FILE} bytes"))
     try:
         note = await usecase.create_note(patient_id, file)
         return EntityResponse(data=note)
@@ -53,7 +58,7 @@ async def post_note(
 
 @ROUTER_V1_PATIENT_NOTES.delete("/patients/notes/{note_id}")
 @inject
-async def delete_note(note_id: str, usecase: PatientNoteUsecasesDependency) -> EntityResponse[PatientNote]:
+async def delete_note(usecase: PatientNoteUsecasesDependency, note_id: str) -> EntityResponse[PatientNote]:
     if not (note := await usecase.delete_note(note_id)):
         raise HTTPException(404)
 

@@ -16,5 +16,5 @@ class SkipNextToken(BaseModel):
     def from_string(token: str) -> "SkipNextToken":
         return SkipNextToken.model_validate_json(token)
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return self.model_dump_json()

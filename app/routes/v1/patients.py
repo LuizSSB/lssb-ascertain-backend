@@ -18,12 +18,12 @@ PatientUsecasesDependency = Annotated[PatientUsecases, Depends(Provide[ioc_conta
 @ROUTER_V1_PATIENTS.get("")
 @inject
 async def get_patients(
-    request: Annotated[GETPatients, Depends()], usecase: PatientUsecasesDependency
+    usecase: PatientUsecasesDependency, request: Annotated[GETPatients, Depends()]
 ) -> ListResponse[Patient]:
     try:
         next_token = SkipNextToken.from_string(request.next_token) if request.next_token else None
     except Exception as e:
-        raise HTTPException(400, ErrorResponse(message="Invalid next token", cause=e))
+        raise HTTPException(400, ErrorResponse(message="Invalid next token", cause=str(e)))
 
     patients, next_token = await usecase.list_patients(
         search_term=request.search_term,
@@ -36,16 +36,16 @@ async def get_patients(
 
 @ROUTER_V1_PATIENTS.get("/{patient_id}")
 @inject
-async def get_patient(patient_id: str, usecase: PatientUsecasesDependency) -> EntityResponse[Patient]:
+async def get_patient(usecase: PatientUsecasesDependency, patient_id: str) -> EntityResponse[Patient]:
     if not (patient := await usecase.get_patient(patient_id)):
         raise HTTPException(404)
 
     return EntityResponse(data=patient)
 
 
-@ROUTER_V1_PATIENTS.post("")
+@ROUTER_V1_PATIENTS.post("", status_code=201)
 @inject
-async def create_patient(patient_data: POSTPatient, usecase: PatientUsecasesDependency) -> EntityResponse[Patient]:
+async def create_patient(usecase: PatientUsecasesDependency, patient_data: POSTPatient) -> EntityResponse[Patient]:
     patient = await usecase.create_patient(patient_data)
     return EntityResponse(data=patient)
 
@@ -53,7 +53,7 @@ async def create_patient(patient_data: POSTPatient, usecase: PatientUsecasesDepe
 @ROUTER_V1_PATIENTS.patch("/{patient_id}")
 @inject
 async def patch_patient(
-    patient_id: str, update: PATCHPatient, usecase: PatientUsecasesDependency
+    usecase: PatientUsecasesDependency, patient_id: str, update: PATCHPatient
 ) -> EntityResponse[Patient]:
     if not (patient := await usecase.update_patient(patient_id, update)):
         raise HTTPException(404)
@@ -61,9 +61,9 @@ async def patch_patient(
     return EntityResponse(data=patient)
 
 
-@ROUTER_V1_PATIENTS.patch("/{patient_id}")
+@ROUTER_V1_PATIENTS.delete("/{patient_id}")
 @inject
-async def delete_patient(patient_id: str, usecase: PatientUsecasesDependency) -> EntityResponse[Patient]:
+async def delete_patient(usecase: PatientUsecasesDependency, patient_id: str) -> EntityResponse[Patient]:
     if not (patient := await usecase.delete_patient(patient_id)):
         raise HTTPException(404)
 

@@ -12,7 +12,7 @@ from app.services.file_conversion import FileConversionService
 
 class PatientNoteUsecases:
 
-    def __init__(self, file_conversion_service: FileConversionService, repository: PatientNoteRepository) -> None:
+    def __init__(self, file_conversion_service: FileConversionService, repository: PatientNoteRepository):
         self.file_conversion_service = file_conversion_service
         self.repository = repository
 

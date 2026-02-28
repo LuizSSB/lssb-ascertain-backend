@@ -1,6 +1,6 @@
-from typing import Generic, TypeVar
+from typing import Generic, NotRequired, TypedDict, TypeVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 class ListRequest(BaseModel):
@@ -20,8 +20,6 @@ class EntityResponse(BaseModel, Generic[_TData]):
     data: _TData
 
 
-class ErrorResponse(BaseModel):
+class ErrorResponse(TypedDict):
     message: str
-    cause: Exception | None = None
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    cause: NotRequired[str]

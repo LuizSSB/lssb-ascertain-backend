@@ -7,7 +7,7 @@ from app.models.app_settings import AppSettings
 
 
 class SQLDatabase:
-    def __init__(self, db_url: str) -> None:
+    def __init__(self, db_url: str):
         self._engine = create_async_engine(db_url, echo=AppSettings.default().ENV == "dev")
         self._session_factory = async_sessionmaker(
             bind=self._engine,
@@ -17,7 +17,7 @@ class SQLDatabase:
             class_=AsyncSession,
         )
 
-    async def create_database(self) -> None:
+    async def create_database(self):
         async with self._engine.begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
 
