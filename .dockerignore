@@ -1,0 +1,23 @@
+# Python cache
+
+**pycache**
+\*.pyc
+
+# Virtual environments
+
+.venv
+env
+venv
+
+# Git metadata
+
+.git
+.gitignore
+
+# Docker and compose files
+
+docker-compose.override.yml
+
+# Misc
+
+\*.log
