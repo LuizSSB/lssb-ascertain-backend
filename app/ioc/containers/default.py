@@ -7,7 +7,7 @@ from app.data.sqldatabase import SQLDatabase
 from app.ioc.containers import BaseAppContainer
 from app.models.app_settings import AppSettings
 from app.services.file_conversion.default import DefaultFileConversionService
-from app.services.summarization.deep_agents import DeepAgentsSummarizationService
+from app.services.summarization.deepagents import DeepAgentsSummarizationService
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_note import PatientNoteUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
@@ -44,9 +44,7 @@ class DefaultAppContainer(BaseAppContainer):
         DefaultFileConversionService,
     )
 
-    summarization_service = providers.Singleton(
-        DeepAgentsSummarizationService,
-    )
+    summarization_service = providers.Singleton(DeepAgentsSummarizationService, model=ai_model)
 
     # usecases
 
@@ -58,7 +56,7 @@ class DefaultAppContainer(BaseAppContainer):
     patient_note_usecases = providers.Factory(
         PatientNoteUsecases,
         file_conversion_service=file_conversion_service,
-        repository=patient_repository,
+        repository=patient_note_repository,
     )
 
     patient_summary_usecases = providers.Factory(

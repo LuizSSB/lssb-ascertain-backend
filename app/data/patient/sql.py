@@ -30,6 +30,7 @@ class SQLPatientRepository(PatientRepository):
             query = query.offset(skip)
         if limit:
             query = query.limit(limit)
+
         if sort_by:
             match sort_by[0]:
                 case Patient.SortField.NAME:
@@ -43,7 +44,7 @@ class SQLPatientRepository(PatientRepository):
                 case "desc":
                     order_function = desc
 
-            query.order_by(order_function(order_field))
+            query = query.order_by(order_function(order_field))
 
         async with self.session_factory() as session:
             results = (await session.execute(query)).scalars().all()

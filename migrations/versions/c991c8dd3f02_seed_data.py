@@ -8,10 +8,10 @@ Create Date: 2026-02-28 12:39:04.291088
 
 import json
 from pathlib import Path
-from typing import Iterable, List, Sequence, Type, Union
+from typing import Any, Iterable, List, Sequence, Type, Union, cast
 
 from alembic import op
-from sqlalchemy import delete
+from sqlalchemy import Table, TableClause, delete
 from sqlmodel import SQLModel
 
 from app.models.sql.patient import SQLPatient
@@ -25,11 +25,19 @@ depends_on: Union[str, Sequence[str], None] = None
 tables = (SQLPatient, SQLPatientNote)
 
 
+def _get_table_name(model: Type[SQLModel]) -> TableClause:
+    return cast(Any, model).__table__name
+
+
+def _get_table(model: Type[SQLModel]) -> Table:
+    return cast(Table, model)
+
+
 def _seed_path_for(model: Type[SQLModel]) -> Path:
     """Return the path to a JSON seed file for a given SQLModel table type."""
 
     base = Path(__file__).parent.parent
-    return base / "data" / "seed" / f"{model.__tablename__}.json"
+    return base / "data" / "seed" / f"{_get_table_name(model)}.json"
 
 
 def _load_records(model: Type[SQLModel]) -> List[SQLModel]:
@@ -58,12 +66,12 @@ def upgrade() -> None:
     bind = op.get_bind()
     for model in tables:
         # ensure the table exists before attempting to insert
-        SQLModel.metadata.create_all(bind=bind, tables=[model.__table__])
+        SQLModel.metadata.create_all(bind=bind, tables=[_get_table(model)])
 
         records = _load_records(model)
         if not records:
             continue
-        bind.execute(model.__table__.insert(), [r.model_dump(exclude_none=True) for r in records])
+        bind.execute(_get_table(model).insert(), [r.model_dump(exclude_none=True) for r in records])
 
 
 def downgrade() -> None:
@@ -81,4 +89,4 @@ def downgrade() -> None:
         ids = list(_ids_from_file(path))
         if not ids:
             continue
-        bind.execute(delete(model.__table__).where(model.__table__.c.id.in_(ids)))
+        bind.execute(delete(_get_table(model)).where(_get_table(model).c.id.in_(ids)))

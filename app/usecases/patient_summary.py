@@ -26,5 +26,5 @@ class PatientSummaryUsecases:
             patient, notes=list(notes), audience=audience, length=length
         )
         return PatientSummary(
-            header=f"Patient: {patient.id} {patient.name} (born {patient.birthdate.isoformat()})", summary=summary
+            header=f"Patient: {patient.name} (id: {patient.id}, born {patient.birthdate.isoformat()})", summary=summary
         )

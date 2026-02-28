@@ -38,10 +38,11 @@ async def get_notes(
     return ListResponse(next_token=str(next_token) if next_token else None, data=patients)
 
 
-_MAX_BYTES_NOTE_FILE = 1024  # 1mb
+_MAX_BYTES_NOTE_FILE = 1024 * 1024  # 1mb
 
 
 @ROUTER_V1_PATIENT_NOTES.post("/patients/{patient_id}/notes", status_code=201)
+@inject
 async def post_note(
     usecase: PatientNoteUsecasesDependency, patient_id: str, file: Annotated[UploadFile, File(...)]
 ) -> EntityResponse[PatientNote]:
@@ -51,6 +52,8 @@ async def post_note(
         note = await usecase.create_note(patient_id, file)
         return EntityResponse(data=note)
     except UnsupportedFileType as e:
+        raise HTTPException(status_code=400, detail=ErrorResponse(message=str(e)))
+    except ValueError as e:
         raise HTTPException(status_code=400, detail=ErrorResponse(message=str(e)))
     finally:
         await file.close()

@@ -80,6 +80,7 @@ Birthdate: {patient.birthdate}
 - Clearly communicate key diagnoses, medications, treatments, and observations.
 - Avoid bullet points unless necessary for clarity.
 - Ensure chronological flow.
+- The patient's date of birth will be later included in the summary's header, so no need to state it.
 - {audience_instruction}
 - {length_instruction}
 """.strip()
