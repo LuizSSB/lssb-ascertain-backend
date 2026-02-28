@@ -4,8 +4,13 @@ from pydantic_settings import BaseSettings
 
 
 class AppSettings(BaseSettings):
-    DB_URL: str
     ENV: Literal["dev", "prod"] = "dev"
+
+    DB_URL: str
+
+    AI_OPENAI_API_BASE: str
+    AI_OPENAI_API_KEY: str
+    AI_MODEL_NAME: str
 
     _instance: ClassVar["AppSettings | None"] = None
 

@@ -1,8 +1,10 @@
 alembic==1.18.4
 asyncpg==0.31.0
+deepagents==0.4.4
 dependency_injector==4.48.3
 fastapi[standard]==0.133.1
 greenlet==3.3.2
+langchain-openai==1.1.10
 PyMuPDF==1.27.1
 sqlmodel==0.0.32
 uvicorn==0.41.0
