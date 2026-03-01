@@ -27,11 +27,11 @@ tables = (SQLPatient, SQLPatientNote)
 
 
 def _get_table_name(model: Type[SQLModel]) -> TableClause:
-    return cast(Any, model).__table__name
+    return cast(Any, model).__tablename__
 
 
 def _get_table(model: Type[SQLModel]) -> Table:
-    return cast(Table, model)
+    return cast(Table, cast(Any, model).__table__)
 
 
 def _seed_path_for(model: Type[SQLModel]) -> Path:

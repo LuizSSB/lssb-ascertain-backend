@@ -1,23 +1,7 @@
 services:
-  db:
-    ports:
-      - "5432:5432"
-
   web:
-    # reuse build definition from the base compose file
     build: .
-
-    # mount the entire project root so any module under /app, /models, etc. can trigger reload
     volumes:
       - ./:/app
-
-    # enable hot reload inside the container
     environment:
       - RELOAD=true
-
-    # expose application port for local testing
-    ports:
-      - "8000:8000"
-
-    # optionally override command to make intent clear (entrypoint is start.sh)
-    command: ["scripts/start.sh"]

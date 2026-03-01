@@ -79,6 +79,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+**Note**: after installing dependencies, for some reason, it may happen that the virtualenv won't catch them. So, close the terminal window, open a new one and activate the virtualenv again to avoid issues.
+
 3. Prepare .env files:
    - dev/prod: copy `.env.sample` as `.env` and fill variables with your own values
    - test: copy `.env.test.sample` as `.env.test` and fill variables with your own values
