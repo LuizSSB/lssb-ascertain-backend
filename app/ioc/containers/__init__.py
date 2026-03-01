@@ -4,12 +4,15 @@ from app.data.patient import PatientRepository
 from app.data.patient_note import PatientNoteRepository
 from app.services.file_conversion import FileConversionService
 from app.services.summarization import SummarizationService
+from app.tooling.logging import AppLogger
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_note import PatientNoteUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
 
 
 class AppContainer(containers.DeclarativeContainer):
+    logger: providers.Factory[AppLogger]
+
     # data
 
     patient_repository: providers.Provider[PatientRepository]

@@ -1,5 +1,6 @@
 import logging
 from typing import Any
+from uuid import uuid4
 
 import structlog
 
@@ -37,9 +38,10 @@ def _set_up():
 
 
 class StructlogAppLogger(AppLogger):
-    def __init__(self, **kwargs: Any):
+    def __init__(self, name: str, **kwargs: Any):
         _set_up()
-        self._logger = structlog.get_logger(**kwargs)
+        args = {"_id": str(uuid4()), "_name": name} | kwargs
+        self._logger = structlog.get_logger(**args)
 
     def info(self, event: str, **kwargs: Any):
         self._logger.info(event, **kwargs)
@@ -52,4 +54,15 @@ class StructlogAppLogger(AppLogger):
 
     def debug(self, event: str, **kwargs: Any):
         self._logger.debug(event, **kwargs)
-        self._logger.debug(event, **kwargs)
+
+    @classmethod
+    def clear_context(cls):
+        structlog.contextvars.clear_contextvars()
+
+    @classmethod
+    def add_to_context(cls, **kwargs: Any):
+        structlog.contextvars.bind_contextvars(**kwargs)
+
+    @classmethod
+    def remove_from_context(cls, *args: str):
+        structlog.contextvars.unbind_contextvars(*args)
