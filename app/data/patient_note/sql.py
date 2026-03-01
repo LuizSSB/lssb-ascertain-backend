@@ -1,10 +1,9 @@
-from contextlib import AbstractAsyncContextManager
-from typing import Callable, Iterable
+from typing import Iterable
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import asc, desc, select
 
 from app.data.patient_note import PatientNoteRepository
+from app.data.sqldatabase import AsyncSessionFactory
 from app.models.patient_note import PatientNote, PatientNoteBaseData
 from app.models.sql.patient_note import SQLPatientNote
 from app.models.utils import SortOrder
@@ -13,9 +12,7 @@ from app.tooling.logging import AppLogger
 
 class SQLPatientNoteRepository(PatientNoteRepository):
 
-    def __init__(
-        self, session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]], logger: AppLogger
-    ) -> None:
+    def __init__(self, session_factory: AsyncSessionFactory, logger: AppLogger) -> None:
         self.session_factory = session_factory
         self.logger = logger
 

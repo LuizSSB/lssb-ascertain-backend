@@ -1,6 +1,6 @@
 import time
-from contextlib import asynccontextmanager
-from typing import Any, ClassVar
+from contextlib import AbstractAsyncContextManager, asynccontextmanager
+from typing import Any, Callable, ClassVar
 
 from sqlalchemy import event
 from sqlalchemy.engine import Connection, Engine, ExecutionContext, make_url
@@ -30,17 +30,21 @@ def before_cursor_execute(
 
 _THRESHOLD_SLOW_QUERY_MS = 500
 
+AsyncSessionFactory = Callable[..., AbstractAsyncContextManager[AsyncSession]]
+
 
 class SQLDatabase:
     _instance: ClassVar["SQLDatabase | None"] = None
 
     def __init__(self, db_url: str, logger: AppLogger):
-        if SQLDatabase._instance:
+        app_settings = AppSettings.default()
+
+        if SQLDatabase._instance and not AppSettings.EnvTraits.CAN_HAVE_MULTIPLE_DBS in app_settings.env_traits:
             raise Exception("Trying to reinstantiate singleton SQLDatabase")
 
         self.logger = logger
         self.logger.info("Initializing SQLDatabase", db_url=_mask_connection_string(db_url))
-        self._engine = create_async_engine(db_url, echo=AppSettings.default().ENV == "dev")
+        self._engine = create_async_engine(db_url, echo=AppSettings.EnvTraits.CAN_LOG_DEBUG in app_settings.env_traits)
         self._session_factory = async_sessionmaker(
             bind=self._engine,
             autocommit=False,

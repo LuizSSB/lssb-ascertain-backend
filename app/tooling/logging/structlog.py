@@ -11,19 +11,18 @@ from app.utils.functions import run_once
 
 @run_once
 def _set_up():
-    match AppSettings.default().ENV:
-        case "dev":
-            processors = (
-                structlog.processors.TimeStamper(fmt="iso", utc=False),
-                structlog.dev.ConsoleRenderer(),
-            )
-            wrapper_class = structlog.make_filtering_bound_logger(logging.NOTSET)
-        case "prod":
-            processors = (
-                structlog.processors.TimeStamper(fmt="iso", utc=False),
-                structlog.processors.JSONRenderer(),
-            )
-            wrapper_class = structlog.make_filtering_bound_logger(20)
+    if AppSettings.EnvTraits.CAN_LOG_DEBUG in AppSettings.default().env_traits:
+        processors = (
+            structlog.processors.TimeStamper(fmt="iso", utc=False),
+            structlog.dev.ConsoleRenderer(),
+        )
+        wrapper_class = structlog.make_filtering_bound_logger(logging.NOTSET)
+    else:
+        processors = (
+            structlog.processors.TimeStamper(fmt="iso", utc=False),
+            structlog.processors.JSONRenderer(),
+        )
+        wrapper_class = structlog.make_filtering_bound_logger(20)
 
     structlog.configure(
         processors=[
