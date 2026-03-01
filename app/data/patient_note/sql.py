@@ -32,7 +32,7 @@ class SQLPatientNoteRepository(PatientNoteRepository):
                 case "desc":
                     order_function = desc
 
-            query.order_by(order_function(SQLPatientNote.encounter_date))
+            query = query.order_by(order_function(SQLPatientNote.encounter_date))
 
         async with self.session_factory() as session:
             results = (await session.execute(query)).scalars().all()
