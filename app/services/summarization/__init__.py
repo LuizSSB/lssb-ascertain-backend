@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from app.models.ai.summary import SummaryAudience, SummaryLength
+from app.models.summary import SummaryAudience, SummaryLength
 from app.models.patient import Patient
 from app.models.patient_note import PatientNote
 

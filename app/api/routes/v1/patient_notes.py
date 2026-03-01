@@ -8,7 +8,6 @@ from app.models.api import EntityResponse, ErrorResponse, ListResponse
 from app.models.api.patient_notes import GETPatientNotes
 from app.models.exceptions import UnsupportedFileType
 from app.models.patient_note import PatientNote
-from app.models.utils import SkipNextToken
 from app.usecases.patient_note import PatientNoteUsecases
 
 ROUTER_V1_PATIENT_NOTES = APIRouter(prefix="", tags=["patient-notes"])
@@ -24,16 +23,10 @@ PatientNoteUsecasesDependency = Annotated[
 async def get_notes(
     usecase: PatientNoteUsecasesDependency, patient_id: str, request: Annotated[GETPatientNotes, Depends()]
 ) -> ListResponse[PatientNote]:
-    try:
-        next_token = SkipNextToken.from_string(request.next_token) if request.next_token else None
-    except Exception as e:
-        raise HTTPException(400, ErrorResponse(message="Invalid next token", cause=str(e)))
-
     patients, next_token = await usecase.list_notes(
         patient_id,
         limit=request.limit,
-        next_token=next_token,
-        sort_order=request.sort_order,
+        next_token=request.parsed_next_token,
     )
     return ListResponse(next_token=str(next_token) if next_token else None, data=patients)
 

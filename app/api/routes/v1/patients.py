@@ -4,13 +4,12 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.ioc import ioc_container_type
-from app.models.ai.summary import SummaryAudience, SummaryLength
-from app.models.api import EntityResponse, ErrorResponse, ListResponse
+from app.models.summary import SummaryAudience, SummaryLength
+from app.models.api import EntityResponse, ListResponse
 from app.models.api.patients import GETPatients, PATCHPatient, POSTPatient
 from app.models.exceptions import NotFoundException
 from app.models.patient import Patient
 from app.models.patient_summary import PatientSummary
-from app.models.utils import SkipNextToken
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
 
@@ -24,16 +23,9 @@ PatientUsecasesDependency = Annotated[PatientUsecases, Depends(Provide[ioc_conta
 async def get_patients(
     usecase: PatientUsecasesDependency, request: Annotated[GETPatients, Depends()]
 ) -> ListResponse[Patient]:
-    try:
-        next_token = SkipNextToken.from_string(request.next_token) if request.next_token else None
-    except Exception as e:
-        raise HTTPException(400, ErrorResponse(message="Invalid next token", cause=str(e)))
-
     patients, next_token = await usecase.list_patients(
-        search_term=request.search_term,
         limit=request.limit,
-        next_token=next_token,
-        sort_by=(request.sort_field, request.sort_order) if request.sort_field else None,
+        next_token=request.parsed_next_token,
     )
     return ListResponse(next_token=str(next_token) if next_token else None, data=patients)
 

@@ -1,6 +1,5 @@
 from app.data.patient import PatientRepository
-from app.models.patient import Patient, PatientBaseData, PatientUpdateData
-from app.models.utils import SkipNextToken, SortFieldData
+from app.models.patient import Patient, PatientBaseData, PatientNextToken, PatientUpdateData
 from app.tooling.logging import AppLogger
 
 
@@ -11,23 +10,28 @@ class PatientUsecases:
         self.logger = logger
 
     async def list_patients(
-        self,
-        *,
-        search_term: str | None = None,
-        sort_by: SortFieldData[Patient.SortField] | None = None,
-        next_token: SkipNextToken | None = None,
-        limit: int | None = None
-    ) -> tuple[list[Patient], SkipNextToken | None]:
-        self.logger.debug(
-            "list_patients usecase", search_term=search_term, sort_by=sort_by, next_token=next_token, limit=limit
+        self, *, next_token: PatientNextToken | None = None, limit: int | None = None
+    ) -> tuple[list[Patient], PatientNextToken | None]:
+        self.logger.debug("list_patients usecase", next_token=next_token, limit=limit)
+
+        next_token = next_token or PatientNextToken(skip=0)
+        patients = list(
+            await self.repository.list_patients(
+                name=next_token.search_term,
+                sort_by=(next_token.sort_field, next_token.sort_order or "asc") if next_token.sort_field else None,
+                skip=next_token.skip,
+                limit=limit,
+            )
         )
-        skip = next_token.skip if next_token else 0
-        patients = await self.repository.list_patients(name=search_term, sort_by=sort_by, limit=limit, skip=skip)
-        patients_list = list(patients)
-        next_next_token = (
-            SkipNextToken(skip=skip + len(patients_list)) if limit and len(patients_list) >= limit else None
-        )
-        return patients_list, next_next_token
+
+        if limit and len(patients) >= limit:
+            next_next_token = next_token.model_copy()
+            next_next_token.skip += len(patients)
+        else:
+            next_next_token = None
+
+        self.logger.debug("list_patients returned", next_token=next_token, limit=limit, next_next_token=next_next_token)
+        return patients, next_next_token
 
     async def get_patient(self, patient_id: str) -> Patient | None:
         self.logger.debug("get_patient usecase", patient_id=patient_id)

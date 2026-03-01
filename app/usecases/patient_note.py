@@ -4,9 +4,8 @@ from pydantic import ValidationError
 from starlette.datastructures import UploadFile
 
 from app.data.patient_note import PatientNoteRepository
-from app.models.ai.soap import SOAPNote
-from app.models.patient_note import PatientNote, PatientNoteBaseData
-from app.models.utils import SkipNextToken, SortOrder
+from app.models.soap import SOAPNote
+from app.models.patient_note import PatientNote, PatientNoteBaseData, PatientNoteNextToken
 from app.services.file_conversion import FileConversionService
 from app.tooling.logging import AppLogger
 
@@ -24,27 +23,42 @@ class PatientNoteUsecases:
         self,
         patient_id: str,
         *,
-        sort_order: SortOrder | None = None,
-        next_token: SkipNextToken | None = None,
+        next_token: PatientNoteNextToken | None = None,
         limit: int | None = None,
-    ) -> tuple[list[PatientNote], SkipNextToken | None]:
+    ) -> tuple[list[PatientNote], PatientNoteNextToken | None]:
         self.logger.debug(
-            "list_notes usecase", patient_id=patient_id, sort_order=sort_order, next_token=next_token, limit=limit
+            "list_notes usecase",
+            patient_id=patient_id,
+            next_token=next_token,
+            limit=limit,
         )
-        skip = next_token.skip if next_token else 0
-        notes = await self.repository.list_notes(patient_id, sort_order=sort_order, limit=limit, skip=skip)
-        notes_list = list(notes)
-        next_next_token = SkipNextToken(skip=skip + len(notes_list)) if limit and len(notes_list) >= limit else None
+
+        next_token = next_token or PatientNoteNextToken(skip=0, sort_order="asc")
+        notes = list(
+            await self.repository.list_notes(
+                patient_id,
+                sort_order=next_token.sort_order,
+                limit=limit,
+                skip=next_token.skip,
+            )
+        )
+
+        if limit and len(notes) >= limit:
+            next_next_token = next_token.model_copy()
+            next_next_token.skip += len(notes)
+        else:
+            next_next_token = None
+
         self.logger.debug(
             "list_notes returned",
-            count=len(notes_list),
+            count=len(notes),
             patient_id=patient_id,
-            sort_order=sort_order,
             next_token=next_token,
             limit=limit,
             next_next_token=next_next_token,
         )
-        return notes_list, next_next_token
+
+        return notes, next_next_token
 
     def _get_soap_note(self, note: str) -> SOAPNote:
         self.logger.debug("_get_soap_note called", note_length=len(note))

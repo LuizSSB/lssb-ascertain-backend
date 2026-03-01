@@ -1,6 +1,6 @@
 from app.data.patient import PatientRepository
 from app.data.patient_note import PatientNoteRepository
-from app.models.ai.summary import SummaryAudience, SummaryLength
+from app.models.summary import SummaryAudience, SummaryLength
 from app.models.exceptions import NotFoundException
 from app.models.patient_summary import PatientSummary
 from app.services.summarization import SummarizationService

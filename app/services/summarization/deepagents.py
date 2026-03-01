@@ -1,7 +1,7 @@
 from deepagents import create_deep_agent  # type: ignore
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from app.models.ai.summary import SummaryAudience, SummaryLength
+from app.models.summary import SummaryAudience, SummaryLength
 from app.models.patient import Patient
 from app.models.patient_note import PatientNote
 from app.services.summarization import SummarizationService
@@ -128,3 +128,4 @@ Birthdate: {patient.birthdate}
                 length=length.name,
                 notes_count=len(notes),
             )
+            raise

@@ -1,12 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api import routes  # type: ignore
 from app.api.middleware.logging import LoggingMiddleware
 from app.api.routes.v1.patient_notes import ROUTER_V1_PATIENT_NOTES
 from app.api.routes.v1.patients import ROUTER_V1_PATIENTS
 from app.ioc import ioc_container, ioc_container_type, ioc_setup_root
+from app.models.api import ErrorResponse
 
 ioc_setup_root(inject_packages={routes})
 
@@ -20,6 +22,24 @@ async def _lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=_lifespan)
+
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
+    return JSONResponse(status_code=500, content=ErrorResponse(message=str(exc)))
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, HTTPException):
+        return JSONResponse(status_code=exc.status_code, content=exc.detail, headers=exc.headers)
+
+    logger = ioc_container_type().logger("global_exception_handler")
+    logger.error("failed to process request", error=str(exc))
+
+    return JSONResponse(status_code=500, content=ErrorResponse(message=str(exc)))
+
+
 app.add_middleware(LoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
