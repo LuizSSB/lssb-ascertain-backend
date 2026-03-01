@@ -1,6 +1,7 @@
 from deepagents import create_deep_agent  # type: ignore
 from langchain_core.language_models.chat_models import BaseChatModel
 
+from app.logging import AppLogger
 from app.models.ai.summary import SummaryAudience, SummaryLength
 from app.models.patient import Patient
 from app.models.patient_note import PatientNote
@@ -8,8 +9,9 @@ from app.services.summarization import SummarizationService
 
 
 class DeepAgentsSummarizationService(SummarizationService):
-    def __init__(self, model: BaseChatModel):
+    def __init__(self, model: BaseChatModel, logger: AppLogger):
         self.model = model
+        self.logger = logger
 
     def summarize_patient(
         self,
@@ -20,6 +22,7 @@ class DeepAgentsSummarizationService(SummarizationService):
         length: SummaryLength,
     ) -> str:
         if not notes:
+            self.logger.warning("summarize_patient called with empty notes", patient_id=patient.id)
             return "No clinical notes available to generate a summary."
 
         # Build structured clinical context
@@ -85,18 +88,43 @@ Birthdate: {patient.birthdate}
 - {length_instruction}
 """.strip()
 
-        result = create_deep_agent(
-            model=self.model,
-            system_prompt=system_prompt,
-        ).invoke(  # type: ignore
-            {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": user_prompt,
-                    }
-                ]
-            },
+        self.logger.info(
+            "summarize_patient starting",
+            patient_id=patient.id,
+            audience=audience.name,
+            length=length.name,
+            notes_count=len(notes),
         )
-
-        return result["messages"][-1].content
+        try:
+            result = create_deep_agent(
+                model=self.model,
+                system_prompt=system_prompt,
+            ).invoke(  # type: ignore
+                {
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": user_prompt,
+                        }
+                    ]
+                },
+            )
+            summary_text = result["messages"][-1].content
+            self.logger.info(
+                "summarize_patient completed",
+                patient_id=patient.id,
+                audience=audience.name,
+                length=length.name,
+                notes_count=len(notes),
+                result_length=len(summary_text),
+            )
+            return summary_text
+        except Exception as e:
+            self.logger.error(
+                "LLM request to summarize patient failed",
+                error=str(e),
+                patient_id=patient.id,
+                audience=audience.name,
+                length=length.name,
+                notes_count=len(notes),
+            )

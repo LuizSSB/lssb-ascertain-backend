@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import asc, desc, select
 
 from app.data.patient_note import PatientNoteRepository
+from app.logging import AppLogger
 from app.models.patient_note import PatientNote, PatientNoteBaseData
 from app.models.sql.patient_note import SQLPatientNote
 from app.models.utils import SortOrder
@@ -12,12 +13,16 @@ from app.models.utils import SortOrder
 
 class SQLPatientNoteRepository(PatientNoteRepository):
 
-    def __init__(self, session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]]) -> None:
+    def __init__(
+        self, session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]], logger: AppLogger
+    ) -> None:
         self.session_factory = session_factory
+        self.logger = logger
 
     async def list_notes(
         self, patient_id: str, *, sort_order: SortOrder | None = None, skip: int | None = None, limit: int | None = None
     ) -> Iterable[PatientNote]:
+        self.logger.debug("list_notes called", patient_id=patient_id, sort_order=sort_order, skip=skip, limit=limit)
         query = select(SQLPatientNote).where(SQLPatientNote.patient_id == patient_id)
         if skip:
             query = query.offset(skip)
@@ -34,6 +39,14 @@ class SQLPatientNoteRepository(PatientNoteRepository):
 
         async with self.session_factory() as session:
             results = (await session.execute(query)).scalars().all()
+            self.logger.debug(
+                "list_notes returned",
+                patient_id=patient_id,
+                sort_order=sort_order,
+                skip=skip,
+                limit=limit,
+                count=len(results),
+            )
             return (r.as_common_type for r in results)
 
     async def create_note(self, note_data: PatientNoteBaseData) -> PatientNote:
@@ -50,7 +63,9 @@ class SQLPatientNoteRepository(PatientNoteRepository):
             session.add(note)
             await session.commit()
             await session.refresh(note)
-            return note.as_common_type
+            created = note.as_common_type
+            self.logger.info("create_note succeeded", patient_id=note_data.patient_id, note_id=created.id)
+            return created
 
     async def delete_note(self, note_id: str) -> PatientNote | None:
         async with self.session_factory() as session:
@@ -59,8 +74,11 @@ class SQLPatientNoteRepository(PatientNoteRepository):
                     await session.execute(select(SQLPatientNote).where(SQLPatientNote.id == note_id))
                 ).scalar_one_or_none()
             ):
+                self.logger.warning("delete_note failed; not found", note_id=note_id)
                 return None
 
             await session.delete(note)
             await session.commit()
-            return note.as_common_type
+            deleted = note.as_common_type
+            self.logger.info("delete_note succeeded", patient_id=deleted.patient_id, note_id=deleted.id)
+            return deleted
