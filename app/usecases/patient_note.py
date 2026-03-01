@@ -4,11 +4,11 @@ from pydantic import ValidationError
 from starlette.datastructures import UploadFile
 
 from app.data.patient_note import PatientNoteRepository
-from app.logging import AppLogger
 from app.models.ai.soap import SOAPNote
 from app.models.patient_note import PatientNote, PatientNoteBaseData
 from app.models.utils import SkipNextToken, SortOrder
 from app.services.file_conversion import FileConversionService
+from app.tooling.logging import AppLogger
 
 
 class PatientNoteUsecases:

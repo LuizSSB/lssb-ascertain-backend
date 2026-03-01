@@ -6,12 +6,12 @@ from langchain_openai import ChatOpenAI
 from app.data.patient.sql import SQLPatientRepository
 from app.data.patient_note.sql import SQLPatientNoteRepository
 from app.data.sqldatabase import SQLDatabase
-from app.ioc.containers import BaseAppContainer
-from app.logging import AppLogger
-from app.logging.structlog import StructlogAppLogger
+from app.ioc.containers import AppContainer
 from app.models.app_settings import AppSettings
 from app.services.file_conversion.default import DefaultFileConversionService
 from app.services.summarization.deepagents import DeepAgentsSummarizationService
+from app.tooling.logging import AppLogger
+from app.tooling.logging.structlog import StructlogAppLogger
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_note import PatientNoteUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
@@ -21,7 +21,7 @@ def _make_logger(base: type) -> AppLogger:
     return StructlogAppLogger(_name=base.__name__, _id=str(uuid4()))
 
 
-class DefaultAppContainer(BaseAppContainer):
+class DefaultAppContainer(AppContainer):
     # data
 
     db = providers.Singleton(

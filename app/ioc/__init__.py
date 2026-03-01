@@ -1,12 +1,12 @@
 from types import ModuleType
 from typing import cast
 
-from app.ioc.containers import BaseAppContainer
+from app.ioc.containers import AppContainer
 from app.ioc.containers.default import DefaultAppContainer
 from app.utils.collections import flatten
 from app.utils.modules import get_module_filepaths
 
-_active_container: tuple[type[BaseAppContainer], BaseAppContainer] | None = None
+_active_container: tuple[type[AppContainer], AppContainer] | None = None
 
 
 def _prepare_container():
@@ -15,7 +15,7 @@ def _prepare_container():
     if not _active_container:
         container_type = DefaultAppContainer
         container = container_type()
-        _active_container = cast(tuple[type[BaseAppContainer], BaseAppContainer], (container_type, container))
+        _active_container = cast(tuple[type[AppContainer], AppContainer], (container_type, container))
 
     return _active_container
 

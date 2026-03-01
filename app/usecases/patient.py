@@ -1,7 +1,7 @@
 from app.data.patient import PatientRepository
-from app.logging import AppLogger
 from app.models.patient import Patient, PatientBaseData, PatientUpdateData
 from app.models.utils import SkipNextToken, SortFieldData
+from app.tooling.logging import AppLogger
 
 
 class PatientUsecases:

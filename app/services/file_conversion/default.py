@@ -1,9 +1,9 @@
 import pymupdf
 from starlette.datastructures import UploadFile
 
-from app.logging import AppLogger
 from app.models.exceptions import UnsupportedFileType
 from app.services.file_conversion import FileConversionService
+from app.tooling.logging import AppLogger
 
 
 class DefaultFileConversionService(FileConversionService):

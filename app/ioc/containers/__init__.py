@@ -9,7 +9,7 @@ from app.usecases.patient_note import PatientNoteUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
 
 
-class BaseAppContainer(containers.DeclarativeContainer):
+class AppContainer(containers.DeclarativeContainer):
     # data
 
     patient_repository: providers.Provider[PatientRepository]

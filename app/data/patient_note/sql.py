@@ -5,10 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import asc, desc, select
 
 from app.data.patient_note import PatientNoteRepository
-from app.logging import AppLogger
 from app.models.patient_note import PatientNote, PatientNoteBaseData
 from app.models.sql.patient_note import SQLPatientNote
 from app.models.utils import SortOrder
+from app.tooling.logging import AppLogger
 
 
 class SQLPatientNoteRepository(PatientNoteRepository):
