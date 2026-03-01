@@ -14,6 +14,7 @@ from alembic import op
 from sqlalchemy import Table, TableClause, delete
 from sqlmodel import SQLModel
 
+from app.models.app_settings import AppSettings
 from app.models.sql.patient import SQLPatient
 from app.models.sql.patient_note import SQLPatientNote
 
@@ -56,12 +57,8 @@ def _ids_from_file(path: Path) -> Iterable[str]:
 
 
 def upgrade() -> None:
-    """Seed the database.
-
-    For each known SQLModel class we look for a JSON file containing an
-    array of dictionaries that can be parsed into that type.  If the file is
-    present we execute a bulk insert through the bind obtained from Alembic.
-    """
+    if AppSettings.EnvTraits.HAS_SEED_DATA not in AppSettings.default().env_traits:
+        return
 
     bind = op.get_bind()
     for model in tables:
@@ -75,11 +72,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Remove seeded rows from the database.
-
-    Deletes any rows whose primary key matches an `id` value listed in the
-    corresponding seed JSON file.  No action is taken if the file is absent.
-    """
+    if AppSettings.EnvTraits.HAS_SEED_DATA not in AppSettings.default().env_traits:
+        return
 
     bind = op.get_bind()
     for model in tables:

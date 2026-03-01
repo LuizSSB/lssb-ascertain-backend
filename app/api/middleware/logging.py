@@ -5,7 +5,7 @@ from uuid import uuid4
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from app.ioc import ioc_container_type
+from app.tooling.ioc import ioc_container_type
 from app.tooling.logging import AppLogger
 
 

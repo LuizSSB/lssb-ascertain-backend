@@ -3,13 +3,13 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.ioc import ioc_container_type
-from app.models.summary import SummaryAudience, SummaryLength
 from app.models.api import EntityResponse, ListResponse
 from app.models.api.patients import GETPatients, PATCHPatient, POSTPatient
 from app.models.exceptions import NotFoundException
 from app.models.patient import Patient
 from app.models.patient_summary import PatientSummary
+from app.models.summary import SummaryAudience, SummaryLength
+from app.tooling.ioc import ioc_container_type
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
 

@@ -6,7 +6,8 @@ from pydantic_settings import BaseSettings
 
 class AppSettings(BaseSettings):
     class EnvTraits(Enum):
-        CAN_LOG_DEBUG = ("CAN_LOG_DEBUG",)
+        HAS_SEED_DATA = "HAS_SEED_DATA"
+        CAN_LOG_DEBUG = "CAN_LOG_DEBUG"
         CAN_HAVE_MULTIPLE_DBS = "CAN_HAVE_MULTIPLE_DBS"
 
     ENV: Literal["dev", "prod", "test"] = "prod"
@@ -21,7 +22,10 @@ class AppSettings(BaseSettings):
     def env_traits(self) -> set["AppSettings.EnvTraits"]:
         match self.ENV:
             case "dev":
-                return {self.EnvTraits.CAN_LOG_DEBUG}
+                return {
+                    self.EnvTraits.CAN_LOG_DEBUG,
+                    self.EnvTraits.HAS_SEED_DATA,
+                }
             case "prod":
                 return set()
             case "test":

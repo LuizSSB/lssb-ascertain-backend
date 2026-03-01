@@ -3,11 +3,11 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
-from app.ioc import ioc_container_type
 from app.models.api import EntityResponse, ErrorResponse, ListResponse
 from app.models.api.patient_notes import GETPatientNotes
 from app.models.exceptions import UnsupportedFileType
 from app.models.patient_note import PatientNote
+from app.tooling.ioc import ioc_container_type
 from app.usecases.patient_note import PatientNoteUsecases
 
 ROUTER_V1_PATIENT_NOTES = APIRouter(prefix="", tags=["patient-notes"])

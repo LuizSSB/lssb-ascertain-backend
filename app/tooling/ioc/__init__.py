@@ -1,8 +1,8 @@
 from types import ModuleType
 from typing import cast
 
-from app.ioc.containers import AppContainer
-from app.ioc.containers.default import DefaultAppContainer
+from app.tooling.ioc.containers import AppContainer
+from app.tooling.ioc.containers.default import DefaultAppContainer
 from app.utils.collections import flatten
 from app.utils.modules import get_module_filepaths
 
