@@ -127,5 +127,3 @@ The codebase architecture and most of the actual coding was done by me, "by hand
 - Automated testing - I focused too much on the code architecture and implementations, so automated testing is only of the unit variety and doesn't cover the API part of the code.
 - Database and AI/LLM flexibility - while the code allows configurable keys, credentials, and other types of value, it's designed to work only with PostgreSQL, for databases, and OpenAI-compatible LLMs.
   - Since the references to the actual database and the AI/LLM are abstracted each one by an interface, adding code to support other vendors should not require much, other than adding the vendor-specific settings and instantiating the vendor-specific implementations in the single place where they are defined.
-- Full-text patient name search - the API supports only the most basic type of string matching, `LIKE '%value%'`.
-  - Since this code is restricted to a single place and abstracted by an interface, adding full-text search in the interface's implementation should require more than a couple lines of code.

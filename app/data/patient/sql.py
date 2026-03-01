@@ -1,7 +1,7 @@
 from typing import Iterable
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import asc, col, desc, select
+from sqlmodel import asc, desc, func, or_, select
 
 from app.data.patient import PatientRepository
 from app.data.sqldatabase import AsyncSessionFactory
@@ -26,30 +26,42 @@ class SQLPatientRepository(PatientRepository):
         limit: int | None = None,
     ) -> Iterable[Patient]:
         self.logger.debug("list_patients called", name=name, sort_by=sort_by, skip=skip, limit=limit)
-        query = select(SQLPatient)
-        if name:
-            query = query.where(col(SQLPatient.name).contains(name))
-        if skip:
-            query = query.offset(skip)
-        if limit:
-            query = query.limit(limit)
-
-        if sort_by:
-            match sort_by[0]:
-                case Patient.SortField.NAME:
-                    order_field = SQLPatient.name
-                case Patient.SortField.BIRTHDATE:
-                    order_field = SQLPatient.birthdate
-
-            match sort_by[1]:
-                case "asc":
-                    order_function = asc
-                case "desc":
-                    order_function = desc
-
-            query = query.order_by(order_function(order_field))
 
         async with self.session_factory() as session:
+            query = select(SQLPatient)
+            if name:
+                match session.bind.dialect.name:
+                    case "postgres":
+                        query = query.where(
+                            or_(
+                                func.to_tsvector("english", SQLPatient.name).op("@@")(
+                                    func.plainto_tsquery("english", name)
+                                ),
+                                func.lower(SQLPatient.name).contains(name.lower()),
+                            )
+                        )
+                    case _:
+                        query = query.where(func.lower(SQLPatient.name).contains(name.lower()))
+            if skip:
+                query = query.offset(skip)
+            if limit:
+                query = query.limit(limit)
+
+            if sort_by:
+                match sort_by[0]:
+                    case Patient.SortField.NAME:
+                        order_field = SQLPatient.name
+                    case Patient.SortField.BIRTHDATE:
+                        order_field = SQLPatient.birthdate
+
+                match sort_by[1]:
+                    case "asc":
+                        order_function = asc
+                    case "desc":
+                        order_function = desc
+
+                query = query.order_by(order_function(order_field))
+
             results = (await session.execute(query)).scalars().all()
             self.logger.debug(
                 "list_patients returned", name=name, sort_by=sort_by, skip=skip, limit=limit, count=len(results)
