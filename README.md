@@ -102,11 +102,10 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 Build and run with the provided Dockerfile and `docker-compose.yml`:
 
 ```bash
-docker build -t ascertain:latest .
-docker-compose up -d
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-There is also `docker-compose.dev.yml` for a development compose setup.
+**Note**: Before deploying to prod, make sure the `ENV` variable in your .env file is either not present or set to "prod".
 
 ### Tests
 
