@@ -41,7 +41,7 @@ class AuthUsecases:
     async def log_user_in(self, email: str, password: str) -> str:
         if not (
             user_and_password := await self.user_repository.get_user(email)
-        ) or not self.auth_service.verify_password(user_and_password[1], password):
+        ) or not self.auth_service.verify_password(password, user_and_password[1]):
             raise NotFoundException
 
         return self.auth_service.create_token(

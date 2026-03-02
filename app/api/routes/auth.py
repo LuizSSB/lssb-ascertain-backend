@@ -1,20 +1,16 @@
 from typing import Annotated
 
-from dependency_injector.wiring import Provide, inject
+from dependency_injector.wiring import inject
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.api.middleware.auth import ROUTE_AUTH
+from app.api.middleware.auth import ROUTE_AUTH, AuthUsecasesDependency
 from app.models.api import EntityResponse, ErrorResponse
 from app.models.api.auth import AuthResponse, POSTSignUp
 from app.models.exceptions import NotFoundException
 from app.models.user import User, UserBaseData, UserRole
-from app.tooling.ioc import ioc_container_type
-from app.usecases.auth import AuthUsecases
 
 ROUTER_AUTH = APIRouter(prefix=f"/{ROUTE_AUTH}")
-
-AuthUsecasesDependency = Annotated[AuthUsecases, Depends(Provide[ioc_container_type().auth_usecases])]
 
 
 @ROUTER_AUTH.post(f"")
@@ -33,7 +29,7 @@ async def auth(
     )
 
 
-@ROUTER_AUTH.post("sign-up", status_code=201)
+@ROUTER_AUTH.post("/sign-up", status_code=201)
 @inject
 async def sign_up(usecase: AuthUsecasesDependency, user_data: POSTSignUp) -> EntityResponse[User]:
     user = await usecase.sign_up(

@@ -79,7 +79,7 @@ class SQLUserRepository(UserRepository):
         async with self.session_factory() as session:
             if user := (
                 await session.execute(
-                    select(SQLUser).where(SQLUser.id == user_id_or_email or SQLUser.email == user_id_or_email)
+                    select(SQLUser).where(or_(SQLUser.id == user_id_or_email, SQLUser.email == user_id_or_email))
                 )
             ).scalar_one_or_none():
                 self.logger.debug("get_user succeeded", user_id=user_id_or_email)
