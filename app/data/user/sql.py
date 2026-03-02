@@ -75,20 +75,25 @@ class SQLUserRepository(UserRepository):
 
         return None
 
-    async def get_user(self, user_id: str) -> User | None:
+    async def get_user(self, user_id_or_email: str) -> tuple[User, str] | None:
         async with self.session_factory() as session:
-            if user := await self._get_user(user_id, session):
-                self.logger.debug("get_user succeeded", user_id=user_id)
-                return user.as_common_type
+            if user := (
+                await session.execute(
+                    select(SQLUser).where(SQLUser.id == user_id_or_email or SQLUser.email == user_id_or_email)
+                )
+            ).scalar_one_or_none():
+                self.logger.debug("get_user succeeded", user_id=user_id_or_email)
+                return user.as_common_type, user.password
 
-            self.logger.debug("get_user no result", user_id=user_id)
+            self.logger.debug("get_user no result", user_id=user_id_or_email)
             return None
 
-    async def create_user(self, user_data: UserBaseData) -> User:
+    async def create_user(self, user_data: UserBaseData, password: str) -> User:
         async with self.session_factory() as session:
             user = SQLUser(
                 name=user_data.name,
                 email=user_data.email,
+                password=password,
                 role=user_data.role,
             )
             session.add(user)

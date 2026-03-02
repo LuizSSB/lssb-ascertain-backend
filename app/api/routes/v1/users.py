@@ -4,7 +4,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.models.api import EntityResponse, ListResponse
-from app.models.api.users import GETUsers, PATCHUser, POSTUser
+from app.models.api.users import GETUsers, PATCHUser
 from app.models.user import User
 from app.tooling.ioc import ioc_container_type
 from app.usecases.user import UserUsecases
@@ -30,13 +30,6 @@ async def get_user(usecase: UserUsecasesDependency, user_id: str) -> EntityRespo
     if not (user := await usecase.get_user(user_id)):
         raise HTTPException(404)
 
-    return EntityResponse(data=user)
-
-
-@ROUTER_V1_USERS.post("", status_code=201)
-@inject
-async def create_user(usecase: UserUsecasesDependency, user_data: POSTUser) -> EntityResponse[User]:
-    user = await usecase.create_user(user_data)
     return EntityResponse(data=user)
 
 

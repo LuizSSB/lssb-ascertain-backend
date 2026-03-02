@@ -19,11 +19,11 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_user(self, user_id: str) -> User | None:
+    async def get_user(self, user_id_or_email: str) -> tuple[User, str] | None:
         pass
 
     @abstractmethod
-    async def create_user(self, user_data: UserBaseData) -> User:
+    async def create_user(self, user_data: UserBaseData, password: str) -> User:
         pass
 
     @abstractmethod

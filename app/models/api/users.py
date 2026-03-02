@@ -1,5 +1,5 @@
 from app.models.api import ListRequest
-from app.models.user import User, UserBaseData, UserNextToken, UserUpdateData
+from app.models.user import User, UserNextToken, UserUpdateData
 from app.models.utils import SortOrder
 
 
@@ -27,7 +27,5 @@ class GETUsers(ListRequest):
 
         return None
 
-
-POSTUser = UserBaseData
 
 PATCHUser = UserUpdateData

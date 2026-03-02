@@ -1,12 +1,14 @@
 from app.data.user import UserRepository
-from app.models.user import User, UserBaseData, UserNextToken, UserUpdateData
+from app.models.user import User, UserNextToken, UserUpdateData
+from app.services.auth import AuthService
 from app.tooling.logging import AppLogger
 
 
 class UserUsecases:
 
-    def __init__(self, repository: UserRepository, logger: AppLogger) -> None:
+    def __init__(self, repository: UserRepository, auth_service: AuthService, logger: AppLogger) -> None:
         self.repository = repository
+        self.auth_service = auth_service
         self.logger = logger
 
     async def list_users(
@@ -35,11 +37,9 @@ class UserUsecases:
 
     async def get_user(self, user_id: str) -> User | None:
         self.logger.debug("get_user usecase", user_id=user_id)
-        return await self.repository.get_user(user_id)
-
-    async def create_user(self, user_data: UserBaseData) -> User:
-        self.logger.debug("create_user usecase", user_data=user_data.model_dump())
-        return await self.repository.create_user(user_data)
+        if user_and_password := await self.repository.get_user(user_id):
+            return user_and_password[0]
+        return None
 
     async def update_user(self, user_id: str, user_data: UserUpdateData) -> User | None:
         self.logger.debug("update_user usecase", user_id=user_id, user_data=user_data.model_dump())

@@ -10,7 +10,8 @@ class SQLUser(SQLModel, table=True):
 
     id: str = Field(primary_key=True, default_factory=lambda: str(uuid.uuid4()))
     name: str
-    email: str
+    email: str = Field(unique=True, index=True)
+    password: str
     role: UserRole
 
     @property
