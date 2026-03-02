@@ -12,6 +12,7 @@ from app.services.summarization.deepagents import DeepAgentsSummarizationService
 from app.tooling.ioc.containers import AppContainer
 from app.tooling.logging import AppLogger
 from app.tooling.logging.structlog import StructlogAppLogger
+from app.usecases.auth import AuthUsecases
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_note import PatientNoteUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
@@ -82,6 +83,13 @@ class DefaultAppContainer(AppContainer):
         UserUsecases,
         repository=user_repository,
         logger=_make_dependency_logger(UserUsecases),
+    )
+
+    auth_usecases = providers.Factory(
+        AuthUsecases,
+        user_repository=user_repository,
+        auth_service=auth_service,
+        logger=_make_dependency_logger(AuthUsecases),
     )
 
     patient_usecases = providers.Factory(

@@ -5,3 +5,7 @@ class UnsupportedFileType(Exception):
 
 class NotFoundException(Exception):
     pass
+
+
+class ResourceExpiredException(Exception):
+    pass

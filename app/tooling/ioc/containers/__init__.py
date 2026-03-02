@@ -7,6 +7,7 @@ from app.services.auth import AuthService
 from app.services.file_conversion import FileConversionService
 from app.services.summarization import SummarizationService
 from app.tooling.logging import AppLogger
+from app.usecases.auth import AuthUsecases
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_note import PatientNoteUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
@@ -35,6 +36,8 @@ class AppContainer(containers.DeclarativeContainer):
     # usecases
 
     user_usecases: providers.Provider[UserUsecases]
+
+    auth_usecases: providers.Provider[AuthUsecases]
 
     patient_usecases: providers.Provider[PatientUsecases]
 
