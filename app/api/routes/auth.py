@@ -8,7 +8,7 @@ from app.api.middleware.auth import ROUTE_AUTH
 from app.models.api import EntityResponse, ErrorResponse
 from app.models.api.auth import AuthResponse, POSTSignUp
 from app.models.exceptions import NotFoundException
-from app.models.user import User, UserBaseData
+from app.models.user import User, UserBaseData, UserRole
 from app.tooling.ioc import ioc_container_type
 from app.usecases.auth import AuthUsecases
 
@@ -36,5 +36,8 @@ async def auth(
 @ROUTER_AUTH.post("sign-up", status_code=201)
 @inject
 async def sign_up(usecase: AuthUsecasesDependency, user_data: POSTSignUp) -> EntityResponse[User]:
-    user = await usecase.sign_up(UserBaseData.model_validate(user_data.model_dump()), user_data.password)
+    user = await usecase.sign_up(
+        UserBaseData(role=UserRole.OPERATOR, **user_data.model_dump()),
+        user_data.password,
+    )
     return EntityResponse(data=user)

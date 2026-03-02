@@ -3,9 +3,10 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.api.routes.auth import AuthUsecasesDependency
 from app.models.api import EntityResponse, ListResponse
-from app.models.api.users import GETUsers, PATCHUser
-from app.models.user import User
+from app.models.api.users import GETUsers, PATCHUser, POSTUser
+from app.models.user import User, UserBaseData, UserRole
 from app.tooling.ioc import ioc_container_type
 from app.usecases.user import UserUsecases
 
@@ -30,6 +31,13 @@ async def get_user(usecase: UserUsecasesDependency, user_id: str) -> EntityRespo
     if not (user := await usecase.get_user(user_id)):
         raise HTTPException(404)
 
+    return EntityResponse(data=user)
+
+
+@ROUTER_V1_USERS.post("", status_code=201)
+@inject
+async def sign_up(usecase: AuthUsecasesDependency, user_data: POSTUser) -> EntityResponse[User]:
+    user = await usecase.sign_up(UserBaseData.model_validate(user_data.model_dump()), user_data.password)
     return EntityResponse(data=user)
 
 

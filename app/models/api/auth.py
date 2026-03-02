@@ -11,4 +11,6 @@ class AuthResponse(BaseModel):
 
 
 class POSTSignUp(UserBaseData):
+    name: str
+    email: str
     password: str

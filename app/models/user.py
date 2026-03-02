@@ -8,7 +8,7 @@ from app.models.utils import SortOrder
 
 class UserRole(str, Enum):
     ADMIN = "admin"
-    PHYSICIAN = "physician"
+    OPERATOR = "operator"
 
 
 class UserBaseData(BaseModel):
