@@ -3,6 +3,7 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.api.middleware.auth import authenticate
 from app.api.routes.auth import AuthUsecasesDependency
 from app.models.api import EntityResponse, ListResponse
 from app.models.api.users import GETUsers, PATCHUser, POSTUser
@@ -10,7 +11,11 @@ from app.models.user import User, UserBaseData, UserRole
 from app.tooling.ioc import ioc_container_type
 from app.usecases.user import UserUsecases
 
-ROUTER_V1_USERS = APIRouter(prefix="/users", tags=["users"])
+ROUTER_V1_USERS = APIRouter(
+    prefix="/users",
+    tags=["users"],
+    dependencies=[Depends(authenticate({UserRole.ADMIN}))],
+)
 
 UserUsecasesDependency = Annotated[UserUsecases, Depends(Provide[ioc_container_type().user_usecases])]
 

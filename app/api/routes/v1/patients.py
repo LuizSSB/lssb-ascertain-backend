@@ -3,6 +3,7 @@ from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.api.middleware.auth import authenticate
 from app.models.api import EntityResponse, ListResponse
 from app.models.api.patients import GETPatients, PATCHPatient, POSTPatient
 from app.models.exceptions import NotFoundException
@@ -13,7 +14,11 @@ from app.tooling.ioc import ioc_container_type
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
 
-ROUTER_V1_PATIENTS = APIRouter(prefix="/patients", tags=["patients"])
+ROUTER_V1_PATIENTS = APIRouter(
+    prefix="/patients",
+    tags=["patients"],
+    dependencies=[Depends(authenticate())],
+)
 
 PatientUsecasesDependency = Annotated[PatientUsecases, Depends(Provide[ioc_container_type().patient_usecases])]
 
