@@ -6,6 +6,7 @@ from app.data.patient_note.sql import SQLPatientNoteRepository
 from app.data.sqldatabase import SQLDatabase
 from app.data.user.sql import SQLUserRepository
 from app.models.app_settings import AppSettings
+from app.services.auth.default import DefaultAuthService
 from app.services.file_conversion.default import DefaultFileConversionService
 from app.services.summarization.deepagents import DeepAgentsSummarizationService
 from app.tooling.ioc.containers import AppContainer
@@ -68,6 +69,11 @@ class DefaultAppContainer(AppContainer):
         DeepAgentsSummarizationService,
         model=ai_model,
         logger=_make_dependency_logger(DeepAgentsSummarizationService),
+    )
+
+    auth_service = providers.Singleton(
+        DefaultAuthService,
+        logger=_make_dependency_logger(DefaultAuthService),
     )
 
     # usecases

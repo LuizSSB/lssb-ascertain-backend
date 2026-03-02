@@ -3,6 +3,7 @@ from dependency_injector import containers, providers
 from app.data.patient import PatientRepository
 from app.data.patient_note import PatientNoteRepository
 from app.data.user import UserRepository
+from app.services.auth import AuthService
 from app.services.file_conversion import FileConversionService
 from app.services.summarization import SummarizationService
 from app.tooling.logging import AppLogger
@@ -28,6 +29,8 @@ class AppContainer(containers.DeclarativeContainer):
     file_conversion_service: providers.Provider[FileConversionService]
 
     summarization_service: providers.Provider[SummarizationService]
+
+    auth_service: providers.Provider[AuthService]
 
     # usecases
 
