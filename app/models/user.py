@@ -10,6 +10,10 @@ class UserRole(str, Enum):
     ADMIN = "admin"
     OPERATOR = "operator"
 
+    @classmethod
+    def _missing_(cls, value: object) -> "UserRole":
+        return UserRole[str(value)]
+
 
 class UserBaseData(BaseModel):
     name: str

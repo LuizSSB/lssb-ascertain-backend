@@ -1,14 +1,12 @@
 from app.data.user import UserRepository
 from app.models.user import User, UserNextToken, UserUpdateData
-from app.services.auth import AuthService
 from app.tooling.logging import AppLogger
 
 
 class UserUsecases:
 
-    def __init__(self, repository: UserRepository, auth_service: AuthService, logger: AppLogger) -> None:
+    def __init__(self, repository: UserRepository, logger: AppLogger) -> None:
         self.repository = repository
-        self.auth_service = auth_service
         self.logger = logger
 
     async def list_users(
