@@ -3,8 +3,9 @@ from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api import routes  # type: ignore
+from app.api import routes
 from app.api.middleware.logging import LoggingMiddleware
+from app.api.routes import ROUTER_ROOT
 from app.api.routes.v1.patient_notes import ROUTER_V1_PATIENT_NOTES
 from app.api.routes.v1.patients import ROUTER_V1_PATIENTS
 from app.models.api import ErrorResponse
@@ -49,5 +50,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(ROUTER_ROOT)
 app.include_router(ROUTER_V1_PATIENTS)
 app.include_router(ROUTER_V1_PATIENT_NOTES)

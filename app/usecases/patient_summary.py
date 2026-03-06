@@ -1,8 +1,8 @@
 from app.data.patient import PatientRepository
 from app.data.patient_note import PatientNoteRepository
-from app.models.summary import SummaryAudience, SummaryLength
 from app.models.exceptions import NotFoundException
 from app.models.patient_summary import PatientSummary
+from app.models.summary import SummaryAudience, SummaryLength
 from app.services.summarization import SummarizationService
 from app.tooling.logging import AppLogger
 
@@ -26,17 +26,15 @@ class PatientSummaryUsecases:
             self.logger.error("summarize usecase patient not found", patient_id=patient_id)
             raise NotFoundException()
 
-        notes = await self.patient_note_repository.list_notes(patient_id, limit=10)
+        notes = list(await self.patient_note_repository.list_notes(patient_id, limit=10))
         self.logger.debug(
             "summarize usecase retrieved notes",
             patient_id=patient_id,
             audience=audience.name,
             length=length.name,
-            count=len(list(notes)),
+            count=len(notes),
         )
-        summary = self.summarization_service.summarize_patient(
-            patient, notes=list(notes), audience=audience, length=length
-        )
+        summary = self.summarization_service.summarize_patient(patient, notes=notes, audience=audience, length=length)
         return PatientSummary(
             header=f"Patient: {patient.name} (id: {patient.id}, born {patient.birthdate.isoformat()})", summary=summary
         )
