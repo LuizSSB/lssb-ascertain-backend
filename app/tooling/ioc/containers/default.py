@@ -4,15 +4,19 @@ from langchain_openai import ChatOpenAI
 from app.data.patient.sql import SQLPatientRepository
 from app.data.patient_note.sql import SQLPatientNoteRepository
 from app.data.sqldatabase import SQLDatabase
+from app.data.user.sql import SQLUserRepository
 from app.models.app_settings import AppSettings
+from app.services.auth.default import DefaultAuthService
 from app.services.file_conversion.default import DefaultFileConversionService
 from app.services.summarization.deepagents import DeepAgentsSummarizationService
 from app.tooling.ioc.containers import AppContainer
 from app.tooling.logging import AppLogger
 from app.tooling.logging.structlog import StructlogAppLogger
+from app.usecases.auth import AuthUsecases
 from app.usecases.patient import PatientUsecases
 from app.usecases.patient_note import PatientNoteUsecases
 from app.usecases.patient_summary import PatientSummaryUsecases
+from app.usecases.user import UserUsecases
 
 
 def _make_dependency_logger(base: type) -> AppLogger:
@@ -28,6 +32,12 @@ class DefaultAppContainer(AppContainer):
         SQLDatabase,
         db_url=AppSettings.default().DB_URL,
         logger=_make_dependency_logger(SQLDatabase),
+    )
+
+    user_repository = providers.Factory(
+        SQLUserRepository,
+        session_factory=db.provided.session,
+        logger=_make_dependency_logger(SQLUserRepository),
     )
 
     patient_repository = providers.Factory(
@@ -62,7 +72,25 @@ class DefaultAppContainer(AppContainer):
         logger=_make_dependency_logger(DeepAgentsSummarizationService),
     )
 
+    auth_service = providers.Singleton(
+        DefaultAuthService,
+        logger=_make_dependency_logger(DefaultAuthService),
+    )
+
     # usecases
+
+    user_usecases = providers.Factory(
+        UserUsecases,
+        repository=user_repository,
+        logger=_make_dependency_logger(UserUsecases),
+    )
+
+    auth_usecases = providers.Factory(
+        AuthUsecases,
+        user_repository=user_repository,
+        auth_service=auth_service,
+        logger=_make_dependency_logger(AuthUsecases),
+    )
 
     patient_usecases = providers.Factory(
         PatientUsecases,
@@ -86,5 +114,4 @@ class DefaultAppContainer(AppContainer):
     )
 
     async def lifecycle_setup(self):
-        await self.db().create_database()
         await self.db().create_database()

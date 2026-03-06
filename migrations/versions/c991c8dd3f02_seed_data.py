@@ -17,13 +17,14 @@ from sqlmodel import SQLModel
 from app.models.app_settings import AppSettings
 from app.models.sql.patient import SQLPatient
 from app.models.sql.patient_note import SQLPatientNote
+from app.models.sql.user import SQLUser
 
 # revision identifiers, used by Alembic.
 revision: str = "c991c8dd3f02"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
-tables = (SQLPatient, SQLPatientNote)
+tables = (SQLUser, SQLPatient, SQLPatientNote)
 
 
 def _get_table_name(model: Type[SQLModel]) -> TableClause:
@@ -80,7 +81,6 @@ def downgrade() -> None:
         path = _seed_path_for(model)
         if not path.exists():
             continue
-        ids = list(_ids_from_file(path))
-        if not ids:
+        if not (ids := list(_ids_from_file(path))):
             continue
         bind.execute(delete(_get_table(model)).where(_get_table(model).c.id.in_(ids)))

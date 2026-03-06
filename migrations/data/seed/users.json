@@ -1,0 +1,10 @@
+[
+  {
+    "id": "94d67dfe-5567-4cd2-af01-921030877218",
+    "name": "Admin",
+    "email": "admin@mail.com",
+    "//": "password is `password`",
+    "password": "$argon2id$v=19$m=65536,t=3,p=4$+qNBMk1\/h543rDeCCHz48Q$mJc\/hYRaCuGwlchIdu8z7R+4zBz9Oq0xP3KmEETvvnk",
+    "role": "ADMIN"
+  }
+]

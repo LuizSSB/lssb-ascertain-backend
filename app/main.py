@@ -3,15 +3,17 @@ from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api import routes
+from app import api  # type: ignore
 from app.api.middleware.logging import LoggingMiddleware
 from app.api.routes import ROUTER_ROOT
+from app.api.routes.auth import ROUTER_AUTH
 from app.api.routes.v1.patient_notes import ROUTER_V1_PATIENT_NOTES
 from app.api.routes.v1.patients import ROUTER_V1_PATIENTS
+from app.api.routes.v1.users import ROUTER_V1_USERS
 from app.models.api import ErrorResponse
 from app.tooling.ioc import ioc_container, ioc_container_type, ioc_setup_root
 
-ioc_setup_root(inject_packages={routes})
+ioc_setup_root(inject_packages={api})
 
 
 @asynccontextmanager
@@ -51,5 +53,7 @@ app.add_middleware(
 )
 
 app.include_router(ROUTER_ROOT)
+app.include_router(ROUTER_AUTH)
+app.include_router(ROUTER_V1_USERS)
 app.include_router(ROUTER_V1_PATIENTS)
 app.include_router(ROUTER_V1_PATIENT_NOTES)
